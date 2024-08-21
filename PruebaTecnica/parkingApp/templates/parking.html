@@ -1,31 +1,39 @@
-<!DOCTYPE html>
 <html>
 <head>
-    <title>Parqueos disponibles</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.4.1/socket.io.js"></script>
+  <title>Parqueos disponibles</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script>
+    $(document).ready(function() {
+      function updateParkingInfo() {
+        $.ajax({
+          url: '/parking_info/', 
+          type: 'GET',
+          dataType: 'json',
+          success: function(data) {
+            console.log(data);
+            if (data.error) {
+              $('#error').text(data.error);
+            } else {
+              $('#total_spaces').text(data.total_spaces);
+              $('#available_spaces').text(data.available_spaces);
+              $('#updated_at').text(new Date(data.updated_at).toLocaleString());
+            }
+          },
+          error: function(xhr, status, error) {
+            $('#error').text('Error: ' + error);
+          }
+        });
+      }
+
+      updateParkingInfo();
+      setInterval(updateParkingInfo, 5000); 
+    });
+  </script>
 </head>
 <body>
-    <h1>Parqueos disponibles</h1>
-    <p>Total de parqueos: <span id="total-spaces"></span></p>
-    <p>Parqueos disponibles: <span id="available-spaces"></span></p>
-
-    <script>
-        $(document).ready(function() {
-            // Conectar al socket.io
-            var socket = io.connect('http://localhost:5000');
-
-            // Actualizar la información de los parqueos
-            socket.on('parking_update', function(data) {
-                $('#total-spaces').text(data.total_spaces);
-                $('#available-spaces').text(data.available_spaces);
-            });
-
-            // Iniciar la actualización cada 5 segundos
-            setInterval(function() {
-                socket.emit('get_parking_info');
-            }, 5000);
-        });
-    </script>
+  <div id="error"></div>
+  <div>Total Spaces: <span id="total_spaces"></span></div>
+  <div>Available Spaces: <span id="available_spaces"></span></div>
+  <div>Last Updated: <span id="updated_at"></span></div>
 </body>
 </html>

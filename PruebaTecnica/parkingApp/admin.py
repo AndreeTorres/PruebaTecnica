@@ -1,3 +1,5 @@
 from django.contrib import admin
+from .models import Parking
 
-# Register your models here.
+# Register Models.
+admin.site.register(Parking)
