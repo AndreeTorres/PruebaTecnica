@@ -30,7 +30,8 @@ def parking_info(request):
         data = {
             'total_spaces': total_spaces,
             'available_spaces': available_spaces,
-            'updated_at': timezone.now().strftime('%Y-%m-%d %H:%M:%S')  # Formatear la fecha en el servidor
+            # Date server format 
+            'updated_at': timezone.now().strftime('%Y-%m-%d %H:%M:%S')  
         }
         return JsonResponse(data)
     except Exception as e:
@@ -46,7 +47,7 @@ def car_enter(request):
             parking.save()
         data = {
             'available_spaces': parking.available_spaces,
-            'updated_at': timezone.now().strftime('%Y-%m-%d %H:%M:%S')  # Formatear la fecha en el servidor
+            'updated_at': timezone.now().strftime('%Y-%m-%d %H:%M:%S')  
         }
         return JsonResponse(data)
     except Exception as e:
@@ -62,7 +63,7 @@ def car_exit(request):
             parking.save()
         data = {
             'available_spaces': parking.available_spaces,
-            'updated_at': timezone.now().strftime('%Y-%m-%d %H:%M:%S')  # Formatear la fecha en el servidor
+            'updated_at': timezone.now().strftime('%Y-%m-%d %H:%M:%S')  
         }
         return JsonResponse(data)
     except Exception as e:
