@@ -1,39 +1,66 @@
+<!DOCTYPE html>
 <html>
 <head>
-  <title>Parqueos disponibles</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-  <script>
-    $(document).ready(function() {
-      function updateParkingInfo() {
-        $.ajax({
-          url: '/parking_info/', 
-          type: 'GET',
-          dataType: 'json',
-          success: function(data) {
-            console.log(data);
-            if (data.error) {
-              $('#error').text(data.error);
-            } else {
-              $('#total_spaces').text(data.total_spaces);
-              $('#available_spaces').text(data.available_spaces);
-              $('#updated_at').text(new Date(data.updated_at).toLocaleString());
-            }
-          },
-          error: function(xhr, status, error) {
-            $('#error').text('Error: ' + error);
-          }
-        });
-      }
-
-      updateParkingInfo();
-      setInterval(updateParkingInfo, 5000); 
-    });
-  </script>
+    <title>Parking Info</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
-  <div id="error"></div>
-  <div>Total Spaces: <span id="total_spaces"></span></div>
-  <div>Available Spaces: <span id="available_spaces"></span></div>
-  <div>Last Updated: <span id="updated_at"></span></div>
+    <h1>Parking Information</h1>
+    <p>Total Spaces: <span id="total_spaces">{{ total_spaces }}</span></p>
+    <p>Available Spaces: <span id="available_spaces">{{ available_spaces }}</span></p>
+    <p>Last Updated: <span id="updated_at">{{ updated_at }}</span></p>
+
+    <button id="car_enter">Car Enter</button>
+    <button id="car_exit">Car Exit</button>
+
+    <script>
+        $(document).ready(function() {
+            $('#car_enter').click(function() {
+                $.ajax({
+                    url: '{% url "car_enter" %}',
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    success: function(data) {
+                        $('#available_spaces').text(data.available_spaces);
+                        $('#updated_at').text(formatDate(new Date(data.updated_at)));
+                    },
+                    error: function(xhr, status, error) {
+                        console.log('Error:', error);
+                        alert('Error: ' + error);
+                    }
+                });
+            });
+
+            $('#car_exit').click(function() {
+                $.ajax({
+                    url: '{% url "car_exit" %}',
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    success: function(data) {
+                        $('#available_spaces').text(data.available_spaces);
+                        $('#updated_at').text(formatDate(new Date(data.updated_at)));
+                    },
+                    error: function(xhr, status, error) {
+                        console.log('Error:', error);
+                        alert('Error: ' + error);
+                    }
+                });
+            });
+
+            function formatDate(date) {
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                const hours = String(date.getHours()).padStart(2, '0');
+                const minutes = String(date.getMinutes()).padStart(2, '0');
+                const seconds = String(date.getSeconds()).padStart(2, '0');
+                return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+            }
+        });
+    </script>
 </body>
 </html>
