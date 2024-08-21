@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Parqueos disponibles</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.4.1/socket.io.js"></script>
+</head>
+<body>
+    <h1>Parqueos disponibles</h1>
+    <p>Total de parqueos: <span id="total-spaces"></span></p>
+    <p>Parqueos disponibles: <span id="available-spaces"></span></p>
+
+    <script>
+        $(document).ready(function() {
+            // Conectar al socket.io
+            var socket = io.connect('http://localhost:5000');
+
+            // Actualizar la información de los parqueos
+            socket.on('parking_update', function(data) {
+                $('#total-spaces').text(data.total_spaces);
+                $('#available-spaces').text(data.available_spaces);
+            });
+
+            // Iniciar la actualización cada 5 segundos
+            setInterval(function() {
+                socket.emit('get_parking_info');
+            }, 5000);
+        });
+    </script>
+</body>
+</html>
